@@ -8,10 +8,10 @@ export const siteConfig: SiteConfig = {
   url: "https://surajbolisetty.com",
   ogImage: "https://surajbolisetty.com/og-image.jpg",
   links: {
-    github: "https://github.com/surajbolisetty",
-    linkedin: "https://linkedin.com/in/surajbolisetty",
+    github: "",
+    linkedin: "",
     twitter: "",
-    email: "hello@surajbolisetty.com",
+    email: "suraj.developerr@gmail.com",
   },
 };
 
