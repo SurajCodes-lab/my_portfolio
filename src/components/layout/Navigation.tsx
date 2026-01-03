@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronRight } from "lucide-react";
 import { ThemeToggle } from "@/components/ui";
 import { Container } from "@/components/ui";
 import { siteConfig, navLinks } from "@/constants/site";
@@ -11,10 +11,33 @@ import { cn } from "@/lib/utils";
 export function Navigation() {
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const [activeSection, setActiveSection] = React.useState("");
 
   React.useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
+
+      // Scroll spy logic
+      const sections = navLinks.map(link => link.href.replace("#", ""));
+      const scrollPosition = window.scrollY + 100;
+
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const offsetTop = element.offsetTop;
+          const offsetHeight = element.offsetHeight;
+
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
+
+      // Reset if at top
+      if (window.scrollY < 100) {
+        setActiveSection("");
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -54,16 +77,29 @@ export function Navigation() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-8">
-              {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors relative group"
-                >
-                  {link.name}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
-                </a>
-              ))}
+              {navLinks.map((link) => {
+                const isActive = activeSection === link.href.replace("#", "");
+                return (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    className={cn(
+                      "text-sm transition-colors relative group",
+                      isActive
+                        ? "text-accent font-medium"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {link.name}
+                    <span
+                      className={cn(
+                        "absolute -bottom-1 left-0 h-0.5 bg-accent transition-all duration-300",
+                        isActive ? "w-full" : "w-0 group-hover:w-full"
+                      )}
+                    />
+                  </a>
+                );
+              })}
             </div>
 
             <div className="flex items-center gap-4">
@@ -121,25 +157,45 @@ export function Navigation() {
                 </button>
               </div>
               <nav className="p-4 space-y-2">
-                {navLinks.map((link) => (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block px-4 py-3 rounded-lg text-foreground hover:bg-accent/10 hover:text-accent transition-colors"
-                  >
-                    {link.name}
-                  </a>
-                ))}
-                <div className="pt-4 border-t border-border mt-4">
+                {navLinks.map((link, index) => {
+                  const isActive = activeSection === link.href.replace("#", "");
+                  return (
+                    <motion.a
+                      key={link.name}
+                      href={link.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className={cn(
+                        "flex items-center justify-between px-4 py-3 rounded-lg transition-all active:scale-[0.98]",
+                        isActive
+                          ? "bg-accent/10 text-accent font-medium border-l-2 border-accent"
+                          : "text-foreground hover:bg-accent/10 hover:text-accent"
+                      )}
+                    >
+                      <span>{link.name}</span>
+                      <ChevronRight className={cn(
+                        "w-4 h-4 transition-transform",
+                        isActive ? "text-accent" : "text-muted-foreground"
+                      )} />
+                    </motion.a>
+                  );
+                })}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: navLinks.length * 0.05 }}
+                  className="pt-4 border-t border-border mt-4"
+                >
                   <a
                     href="#contact"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="block w-full px-4 py-3 rounded-lg bg-accent text-accent-foreground text-center font-medium hover:bg-accent/90 transition-colors"
+                    className="block w-full px-4 py-3 rounded-lg bg-accent text-accent-foreground text-center font-medium hover:bg-accent/90 transition-colors active:scale-[0.98]"
                   >
                     Let&apos;s Talk
                   </a>
-                </div>
+                </motion.div>
               </nav>
             </motion.div>
           </>

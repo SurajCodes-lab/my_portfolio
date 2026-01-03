@@ -1,6 +1,7 @@
 import { Navigation, Footer } from "@/components/layout";
 import {
   Hero,
+  Clients,
   CaseStudies,
   // Projects,
   Skills,
@@ -14,6 +15,7 @@ export default function Home() {
       <Navigation />
       <main>
         <Hero />
+        <Clients />
         <CaseStudies />
         {/* <Projects /> */}
         <Skills />

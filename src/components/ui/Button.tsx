@@ -1,13 +1,18 @@
 "use client";
 
 import * as React from "react";
+import { motion, type HTMLMotionProps } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps {
   variant?: "primary" | "secondary" | "ghost" | "outline";
   size?: "sm" | "md" | "lg";
   children: React.ReactNode;
   href?: string;
+  className?: string;
+  onClick?: () => void;
+  disabled?: boolean;
+  type?: "button" | "submit" | "reset";
 }
 
 export function Button({
@@ -16,14 +21,16 @@ export function Button({
   className,
   children,
   href,
-  ...props
+  onClick,
+  disabled,
+  type = "button",
 }: ButtonProps) {
   const baseStyles =
     "inline-flex items-center justify-center font-medium transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none";
 
   const variants = {
     primary:
-      "bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg shadow-accent/30 dark:shadow-accent/25 hover:shadow-accent/50 dark:hover:shadow-accent/40 hover:scale-[1.02]",
+      "bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg shadow-accent/30 dark:shadow-accent/25 hover:shadow-accent/50 dark:hover:shadow-accent/40",
     secondary:
       "bg-card text-card-foreground border border-border hover:bg-accent/10 hover:border-accent/50 shadow-sm dark:shadow-none",
     ghost: "text-foreground hover:bg-accent/10 hover:text-accent",
@@ -39,17 +46,33 @@ export function Button({
 
   const classes = cn(baseStyles, variants[variant], sizes[size], className);
 
+  const motionProps = {
+    whileHover: disabled ? {} : { scale: 1.02, y: -1 },
+    whileTap: disabled ? {} : { scale: 0.98 },
+    transition: { type: "spring" as const, stiffness: 400, damping: 17 },
+  };
+
   if (href) {
     return (
-      <a href={href} className={classes}>
+      <motion.a
+        href={href}
+        className={classes}
+        {...motionProps}
+      >
         {children}
-      </a>
+      </motion.a>
     );
   }
 
   return (
-    <button className={classes} {...props}>
+    <motion.button
+      type={type}
+      className={classes}
+      onClick={onClick}
+      disabled={disabled}
+      {...motionProps}
+    >
       {children}
-    </button>
+    </motion.button>
   );
 }

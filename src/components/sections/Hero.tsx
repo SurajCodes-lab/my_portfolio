@@ -1,10 +1,49 @@
 "use client";
 
+import * as React from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui";
 import { Container } from "@/components/ui";
-import { siteConfig } from "@/constants/site";
+
+const rotatingWords = [
+  "production-ready",
+  "scalable",
+  "performant",
+  "modern",
+  "accessible",
+];
+
+function RotatingText() {
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % rotatingWords.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <span className="relative inline-block overflow-hidden h-[1.1em] align-bottom">
+      {rotatingWords.map((word, index) => (
+        <motion.span
+          key={word}
+          className="gradient-text absolute left-0 whitespace-nowrap"
+          initial={{ y: "100%", opacity: 0 }}
+          animate={{
+            y: currentIndex === index ? "0%" : currentIndex === (index + 1) % rotatingWords.length ? "-100%" : "100%",
+            opacity: currentIndex === index ? 1 : 0,
+          }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
+        >
+          {word}
+        </motion.span>
+      ))}
+      <span className="invisible">{rotatingWords[0]}</span>
+    </span>
+  );
+}
 
 export function Hero() {
   return (
@@ -54,7 +93,7 @@ export function Hero() {
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground font-display leading-tight"
           >
             Building{" "}
-            <span className="gradient-text">production-ready</span>{" "}
+            <RotatingText />{" "}
             web applications
           </motion.h1>
 
