@@ -97,7 +97,7 @@ export const caseStudies: CaseStudy[] = [
       "Clear service categorization for 20+ practice areas",
       "Improved client consultation scheduling",
     ],
-    websiteUrl: "https://judicium-aribitration.vercel.app",
+    websiteUrl: "https://www.judiciumarbitration.com",
     featured: true,
   },
   {
